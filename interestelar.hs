@@ -9,13 +9,13 @@ data Planeta = Planeta {
 
 posicion :: Posicion,
 dilatacion :: Float
-}
+} deriving (Show)
 
 data Astronauta = Astronauta {
 
 edadTerrestre :: Float,
 planetaActual :: Planeta
-}
+} deriving (Show)
 
 x109Z = Planeta {
 
@@ -57,8 +57,8 @@ distancia planeta1 planeta2= sqrt(distanciaX planeta1 planeta2 + distanciaY plan
 
 -- Punto 4
 
-pasarAnios :: Astronauta -> Float -> Astronauta
-pasarAnios astronauta anios= astronauta{edadTerrestre = (edadTerrestre astronauta) + anios + (dilatacionDeAstronauta astronauta) }
+envejecer :: Float -> Astronauta -> Astronauta
+envejecer anios astronauta= astronauta{edadTerrestre = (edadTerrestre astronauta) + anios + (dilatacionDeAstronauta astronauta) }
 
 dilatacionDeAstronauta astronauta = dilatacion (planetaActual astronauta)
 
@@ -67,24 +67,43 @@ type Tiempo = Float
 
 type Velocidad = Float
 
+laNaveVieja tanquesDeOxigeno | tanquesDeOxigeno <6 = calcularTiempo 10
+                             | otherwise = calcularTiempo 7
+
+laNaveFuturistica _ = 0
+
+laNaveX :: Char -> Nave -> Float
+laNaveX 'A' = calcularTiempo 15
+laNaveX 'B' = calcularTiempo 11
+laNaveX 'C' =(*2).calcularTiempo 11 -- resolver retraso
+
+calcularTiempo :: Float -> Nave -> Float
+calcularTiempo velocidad (Nave planeta1 planeta2) = (distancia planeta1 planeta2)/velocidad
+
 data Nave = Nave {
 
-planetaOrigen :: Planeta,
-planetaDestino :: Planeta,
-tanquesOxigeno :: Float,
-tipoX :: Char
+planetaInicial :: Planeta,
+planetaFinal :: Planeta
 }
+type FuncionNaveEspacial = Planeta -> Planeta -> Tiempo
+-- Realizar un viaje implica que el astronauta
+-- aumente su edad en el tiempo de viaje correspondiente para llegar al destino elegido y cambie de planeta al mismo.
 
-laNaveVieja :: Nave -> Float
-laNaveVieja nave | (tanquesOxigeno nave) < 6 = 10
-                 | otherwise = 7
+--envejecer :: Float -> Astronauta -> Astronauta
 
-laNaveFuturista _ = 0
 
---laNaveX :: 
-laNaveX nave | tipoX == 'a' = 15
-             | tipoX == 'b' = 11
-             | otherwise = 11  -- agregar retraso
+cambiarPlaneta planetaDestino astronauta = astronauta { planetaActual = planetaDestino }
 
-tiempo :: (Nave -> Float)-> Nave -> Tiempo
-tiempo funcion nave velocidad= distancia (planetaOrigen nave) (planetaDestino nave)/
+viaje astronauta planetaDestino= (cambiarPlaneta planetaDestino).(envejecer (funcionNave ((planetaActual astronauta) planetaDestino)  )  astronauta
+--                                Astronauta -> Astronauta  
+
+
+
+
+
+
+--viaje nave planetaDestino astronauta = 
+--    (
+--        cambiarPlaneta planetaDestino .
+--        envejecer (nave (planeta astronauta, planetaDestino))
+--    ) astronauta
